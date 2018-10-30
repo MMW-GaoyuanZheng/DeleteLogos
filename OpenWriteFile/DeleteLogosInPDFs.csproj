@@ -8,8 +8,8 @@
     <ProjectGuid>{7FF4A8FF-2887-4D8E-A9BE-B52E3E3CA3F1}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenWriteFile</RootNamespace>
-    <AssemblyName>OpenWriteFile</AssemblyName>
+    <RootNamespace>DeleteLogosInPDFs</RootNamespace>
+    <AssemblyName>DeleteLogosInPDFs</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -103,6 +103,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="OpenWriteFile_TemporaryKey.pfx" />
     <None Include="packages.config" />

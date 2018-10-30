@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenWriteFile", "OpenWriteFile\OpenWriteFile.csproj", "{7FF4A8FF-2887-4D8E-A9BE-B52E3E3CA3F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeleteLogosInPDFs", "OpenWriteFile\DeleteLogosInPDFs.csproj", "{7FF4A8FF-2887-4D8E-A9BE-B52E3E3CA3F1}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup1", "Setup1\Setup1.vdproj", "{C4304A31-A45A-4A76-BABE-43A71B513917}"
 EndProject

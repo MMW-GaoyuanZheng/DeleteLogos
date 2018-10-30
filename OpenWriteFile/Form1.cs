@@ -1,9 +1,4 @@
-﻿/* Made by TheDarkJoker94. 
-*  Check http://thedarkjoker094.blogspot.com/ for more C# Tutorials 
-*  and also SUBSCRIBE to my Youtube Channel http://www.youtube.com/user/TheDarkJoker094 
-*  Thanks! */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,7 +14,7 @@ using PdfSharp.Charting;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 
-namespace OpenWriteFile
+namespace DeleteLogosInPDFs
 {
     public partial class Form1 : Form
     {
@@ -34,20 +29,18 @@ namespace OpenWriteFile
                 textBox.Text = folderBrowserDialog1.SelectedPath;
             }
         }
-        private void btnOutput_Click(object sender, EventArgs e)
+        private void btnFolderWithAllNumberedPDFs_Click(object sender, EventArgs e)
         {
-            chooseFolder(txtOutput);
+            chooseFolder(txtFolderWithAllNumberedDrawings);
         }
-
-        private void btnInput_Click(object sender, EventArgs e)
+        private void btnFolderWithOriginalPDFs_Click(object sender, EventArgs e)
         {
-            chooseFolder(txtInput);
+            chooseFolder(txtFolderWithOriginalDrawings);
         }
-
         private void btnNameChange_Click(object sender, EventArgs e)
         {
-            DirectoryInfo nameComeFrom = new DirectoryInfo(this.txtInput.Text);
-            DirectoryInfo toChange = new DirectoryInfo(this.txtOutput.Text);
+            DirectoryInfo nameComeFrom = new DirectoryInfo(this.txtFolderWithOriginalDrawings.Text);
+            DirectoryInfo toChange = new DirectoryInfo(this.txtFolderWithAllNumberedDrawings.Text);
 
             string[] allFilesComeFromFolder;
             int[] prefix;
@@ -94,10 +87,36 @@ namespace OpenWriteFile
                 newfilename = toChange.ToString() + "\\" + allFilesComeFromFolder[SuchenNachDemDateiMitGleicherNummer(allFilesComeFromFolder.Length, prefix, Convert.ToInt32(toChangeFileNumber))];
                 System.IO.File.Move(oldfilename, newfilename);
             }
-            if (MessageBox.Show("Die Namen sind schon geändert", "My Application", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            MessageBox.Show("Die Namen sind schon geändert", "My Application", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        }
+        //1 
+        private void MoveAllPDFsIntoOneFolder_Click(object sender, EventArgs e)
+        {
+            var allFilesInDict = Directory.GetFiles(txtFolderWithOriginalDrawings.Text, "*.*", SearchOption.AllDirectories)
+                                           .Where(s => s.EndsWith(".pdf"));
+            string fileName;
+            int prefixNumber = 0;
+            int pages;
+            foreach (string file in allFilesInDict)
             {
-                Application.Exit();
+                pages = GetPages(file);
+                fileName = Path.GetFileName(file);
+
+                if (pages > 1)
+                {
+                    prefixNumber ++;
+                    int firstPrefixNumber= prefixNumber;
+                    int lastPrefixNumber = prefixNumber + pages - 1;
+                    fileName = firstPrefixNumber.ToString("D" + 5) + "-" + lastPrefixNumber.ToString("D" + 5) + "_" + fileName;
+                }
+                else
+                {
+                    prefixNumber++;
+                    fileName = prefixNumber.ToString("D" + 5) + "_" + fileName;
+                }
+                File.Copy(file, txtFolderWithAllNumberedDrawings.Text + "\\" + fileName, true);
             }
+            MessageBox.Show("Alle Zeichnungen werden in " + txtFolderWithAllNumberedDrawings.Text + " verschoben", "My Application", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
         }
 
         private int SuchenNachDemDateiMitGleicherNummer(int GesamtDateienAnzahl, int[] prefix, int toChangeFileNumber)
@@ -120,38 +139,6 @@ namespace OpenWriteFile
             }
         }
 
-        private void MoveAllPdfsToOneDict_Click(object sender, EventArgs e)
-        {
-            var allFilesInDict = Directory.GetFiles(txtInput.Text, "*.*", SearchOption.AllDirectories)
-                                           .Where(s => s.EndsWith(".pdf"));
-            string fileName;
-            int prefixNumber = 0;
-            int pages;
-            foreach (string file in allFilesInDict)
-            {
-                pages = GetPages(file);
-                fileName = Path.GetFileName(file);
-
-                if (pages > 1)
-                {
-                    prefixNumber ++;
-                    int firstPrefixNumber= prefixNumber;
-                    int lastPrefixNumber = prefixNumber + pages - 1;
-                    fileName = firstPrefixNumber.ToString("D" + 5) + "-" + lastPrefixNumber.ToString("D" + 5) + "_" + fileName;
-                }
-                else
-                {
-                    prefixNumber++;
-                    fileName = prefixNumber.ToString("D" + 5) + "_" + fileName;
-                }
-                File.Copy(file, txtOutput.Text + "\\" + fileName, true);
-            }
-            if (MessageBox.Show("Alle Zeichnungen werden in diesen Ordner verschoben", "My Application", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                Application.Exit();
-            }
-        }
-
         private int GetPages(string ppath)
         {
             iTextSharp.text.pdf.PdfReader pdfReader = new iTextSharp.text.pdf.PdfReader(ppath);
@@ -163,8 +150,8 @@ namespace OpenWriteFile
 
         private void ZeichnungenAusDemOrdnerZiehen_Click(object sender, EventArgs e)
         {
-            var allfilesInFromFolder = System.IO.Directory.GetFiles(txtInput.Text + "\\", "*.*", System.IO.SearchOption.AllDirectories).Where(s => s.EndsWith(".pdf"));
-            var allfilesInToFolder = System.IO.Directory.GetFiles(txtOutput.Text, "*.*", System.IO.SearchOption.AllDirectories).Where(s => s.EndsWith(".pdf"));
+            var allfilesInFromFolder = System.IO.Directory.GetFiles(txtFolderWithOriginalDrawings.Text + "\\", "*.*", System.IO.SearchOption.AllDirectories).Where(s => s.EndsWith(".pdf"));
+            var allfilesInToFolder = System.IO.Directory.GetFiles(txtFolderWithAllNumberedDrawings.Text, "*.*", System.IO.SearchOption.AllDirectories).Where(s => s.EndsWith(".pdf"));
             Boolean gefunden = false;
             string fileName;
             int i = 0;
@@ -181,7 +168,7 @@ namespace OpenWriteFile
                     if (Path.GetFileName(fileInToFolder).Equals(fileName))
                     {
                         System.IO.File.Move(fileInFromFolder, Path.GetDirectoryName(fileInFromFolder) + "\\" + fileName);
-                        System.IO.File.Copy(txtInput.Text + "\\" + fileName, fileInToFolder, true);
+                        System.IO.File.Copy(txtFolderWithOriginalDrawings.Text + "\\" + fileName, fileInToFolder, true);
                         gefunden = true;
                     }
                 }
@@ -191,17 +178,14 @@ namespace OpenWriteFile
                     break;
                 }
             }
-            if (MessageBox.Show("Alle Zeichnungen werden in diesen Ordner verschoben", "My Application", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                Application.Exit();
-            }
+            MessageBox.Show("Alle Zeichnungen werden in diesen Ordner verschoben", "My Application", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
         }
 
         private void Mergen_Click(object sender, EventArgs e)
         {
             PdfSharp.Pdf.PdfDocument onePdf;
             PdfSharp.Pdf.PdfDocument outPdf = new PdfSharp.Pdf.PdfDocument();
-            DirectoryInfo toChange = new DirectoryInfo(this.txtOutput.Text);
+            DirectoryInfo toChange = new DirectoryInfo(this.txtFolderWithAllNumberedDrawings.Text);
             foreach (var fi in toChange.GetFiles().OrderBy(fi => fi.Name))
             {
                 onePdf = PdfSharp.Pdf.IO.PdfReader.Open(fi.FullName, PdfDocumentOpenMode.Import);
@@ -209,12 +193,9 @@ namespace OpenWriteFile
                 onePdf.Close();
                 //fi.Delete();
             }
-            outPdf.Save(this.txtOutput.Text+"\\"+"TomTomMerge.pdf");
+            outPdf.Save(this.txtFolderWithAllNumberedDrawings.Text+"\\"+"TomTomMerge.pdf");
             outPdf.Close();
-            if (MessageBox.Show("Alle Zeichnungen werden in TomTomMerge.pdf zusammengefügt", "My Application", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                Application.Exit();
-            }
+            MessageBox.Show("Alle Zeichnungen werden in TomTomMerge.pdf zusammengefügt", "My Application", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
         }
     }
 }
